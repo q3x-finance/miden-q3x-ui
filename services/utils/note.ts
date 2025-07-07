@@ -1,4 +1,10 @@
-import { AccountId, NoteType } from "@demox-labs/miden-sdk";
+import {
+  AccountId,
+  NoteIdAndArgs,
+  NoteIdAndArgsArray,
+  NoteType,
+  TransactionRequestBuilder,
+} from "@demox-labs/miden-sdk";
 import { useClient } from "../../hooks/web3/useClient";
 
 export async function createP2IDNote(
@@ -35,10 +41,20 @@ export async function createP2IDRNote(
   faucet: AccountId,
   amount: number,
   noteType: NoteType,
-  recallHeight: number
+  reclaimAfter: number, // seconds after which the note can be reclaimed
+  currentBlockHeight: number
 ) {
   const { FungibleAsset, OutputNote, Note, NoteAssets, Word, Felt } =
     await import("@demox-labs/miden-sdk");
+
+  // we need to get current block height, then add recall height to it, it will became the final reclaim block height
+  // each block was around 5 seconds
+
+  // turn seconds into blocks
+  const reclaimAfterBlocks = reclaimAfter / 5;
+
+  // add current block height to reclaim after blocks
+  const finalReclaimBlockHeight = currentBlockHeight + reclaimAfterBlocks;
 
   return OutputNote.full(
     Note.createP2IDRNote(
@@ -53,7 +69,7 @@ export async function createP2IDRNote(
         new Felt(BigInt(3)),
         new Felt(BigInt(4)),
       ]),
-      recallHeight,
+      finalReclaimBlockHeight,
       new Felt(BigInt(0))
     )
   );
@@ -71,7 +87,7 @@ export async function consumeAllNotes(accountId: string, noteIds: string[]) {
     );
     await client.submitTransaction(txResult);
   } catch (err) {
-    throw new Error("Failed to consume notes");
+    throw new Error("consumeAllNotes: Failed to consume notes");
   }
 }
 
@@ -84,6 +100,28 @@ export async function getConsumableNotes(accountId: string) {
     const notes = await client.getConsumableNotes(AccountId.fromHex(accountId));
     return notes;
   } catch (error) {
-    throw new Error("Failed to fetch consumable notes");
+    throw new Error("getConsumableNotes: Failed to fetch consumable notes");
+  }
+}
+
+export async function consumePrivateNote(
+  noteIds: NoteIdAndArgs[],
+  accountId: string
+) {
+  const { getClient } = useClient();
+  try {
+    const client = await getClient();
+
+    const consumeTxRequest = new TransactionRequestBuilder()
+      .withAuthenticatedInputNotes(new NoteIdAndArgsArray(noteIds))
+      .build();
+
+    const txResult = await client.newTransaction(
+      AccountId.fromHex(accountId),
+      consumeTxRequest
+    );
+    await client.submitTransaction(txResult);
+  } catch (error) {
+    throw new Error("consumePrivateNote: Failed to fetch consumable notes");
   }
 }

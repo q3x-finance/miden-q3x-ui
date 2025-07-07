@@ -1,4 +1,10 @@
+import { FungibleAsset } from "@demox-labs/miden-sdk";
 import { useClient } from "../../hooks/web3/useClient";
+
+interface Asset {
+  tokenAddress: string;
+  amount: string;
+}
 
 export async function deployAccount(isPublic: boolean) {
   const { getClient } = useClient();
@@ -11,4 +17,18 @@ export async function deployAccount(isPublic: boolean) {
   );
 
   return account;
+}
+
+export async function getAccountAssets(accountId: any): Promise<Asset[]> {
+  const { getClient } = useClient();
+  const client = await getClient();
+  await client.syncState();
+  let account = await client.getAccount(accountId);
+
+  // read account assets
+  const assets: FungibleAsset[] = account?.vault().fungibleAssets() || [];
+  return assets.map((asset: any) => ({
+    tokenAddress: asset.faucetId().toString(),
+    amount: asset.amount().toString(),
+  }));
 }
