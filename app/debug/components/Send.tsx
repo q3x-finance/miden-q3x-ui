@@ -1,6 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
-import { AccountId, NoteIdAndArgsArray } from "@demox-labs/miden-sdk";
+import {
+  AccountId,
+  Felt,
+  FeltArray,
+  NoteExecutionHint,
+  NoteIdAndArgsArray,
+  NoteInputs,
+  NoteRecipient,
+  NoteScript,
+  Word,
+} from "@demox-labs/miden-sdk";
 import { Faucet, Recipient, TransferRequest } from "../types";
 import { createP2IDNote, createP2IDRNote } from "@/services/utils/note";
 import { useClient } from "@/hooks/web3/useClient";
@@ -94,7 +104,54 @@ export default function Send({
     const note = txResult.createdNotes().getNote(0);
     const exportedNote = await client.exportNote(note.id().toString(), "Full");
 
-    console.log("EXPORTED NOTE", exportedNote);
+    const fullNote = note.intoFull();
+
+    if (fullNote) {
+      const target = AccountId.fromHex("0x19f40c2206cdba1000001cf339984d");
+
+      // metadata
+      const outputNoteMetadata = {
+        sender: fullNote.metadata().sender().toString(),
+        noteType: NoteType.Private,
+        noteTag: "0x19f40c2206cdba1000001cf339984d", // from_account_id(target.into());
+        executionHint: "always",
+        aux: 0,
+      };
+
+      const outputNoteAssets = {
+        asset: fullNote
+          .assets()
+          .fungibleAssets()
+          .map((asset) => ({
+            faucetId: asset.faucetId().toString(),
+            amount: asset.amount(),
+          })),
+      };
+
+      const outputNoteRecipient = {
+        serialNumber: Word.newFromFelts([
+          new Felt(BigInt(1)),
+          new Felt(BigInt(2)),
+          new Felt(BigInt(3)),
+          new Felt(BigInt(4)),
+        ]),
+        noteScript: NoteScript.p2id(),
+        input: new NoteInputs(
+          new FeltArray([target.suffix(), target.prefix()])
+        ),
+      };
+
+      console.log(outputNoteMetadata, outputNoteAssets, outputNoteRecipient);
+    }
+
+    // call api to store the full note
+    // const response = await fetch("/api/store-note", {
+    //   method: "POST",
+    //   body: {
+    //     note: note.intoFull()?.recipient,
+    //   },
+    // });
+    // const data = await response.json();
 
     return txResult.executedTransaction().id().toHex();
   }
