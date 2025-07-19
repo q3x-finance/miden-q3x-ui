@@ -25,6 +25,7 @@ interface ModalContextType {
   closeAllModals: () => void;
   isModalOpen: (modalId: ModalId) => boolean;
   getModalProps: (modalId: ModalId) => ModalProps | undefined;
+  getModalZIndex: (modalId: ModalId) => number;
 }
 
 const ModalContext = createContext<ModalContextType>({
@@ -33,6 +34,7 @@ const ModalContext = createContext<ModalContextType>({
   closeAllModals: () => {},
   isModalOpen: () => false,
   getModalProps: () => undefined,
+  getModalZIndex: () => 50,
 });
 
 export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
@@ -143,6 +145,28 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
     [modalStates],
   );
 
+  const getModalZIndex = useCallback(
+    (modalId: ModalId) => {
+      const modalState = modalStates[modalId];
+      if (!modalState?.isOpen || !modalState.timestamp) {
+        return 50; // Default z-index if modal not found or not open
+      }
+
+      // Get all open modals sorted by timestamp (earliest first)
+      const openModals = Object.entries(modalStates)
+        .filter(([, state]) => state.isOpen && state.timestamp)
+        .sort(([, stateA], [, stateB]) => stateA.timestamp! - stateB.timestamp!)
+        .map(([id, state]) => ({ id, timestamp: state.timestamp! }));
+
+      // Find the position of this modal in the opening order
+      const position = openModals.findIndex(modal => modal.timestamp === modalState.timestamp);
+
+      // Base z-index of 50, each subsequent modal gets +10
+      return 50 + position * 10;
+    },
+    [modalStates],
+  );
+
   const value = useMemo(
     () => ({
       openModal,
@@ -150,8 +174,9 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
       closeAllModals,
       isModalOpen,
       getModalProps,
+      getModalZIndex,
     }),
-    [openModal, closeModal, closeAllModals, isModalOpen, getModalProps],
+    [openModal, closeModal, closeAllModals, isModalOpen, getModalProps, getModalZIndex],
   );
 
   return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;

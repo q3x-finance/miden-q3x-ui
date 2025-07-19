@@ -24,6 +24,7 @@ export type ModalId = keyof typeof MODAL_IDS;
 
 export interface BaseModalProps {
   onClose: () => void;
+  zIndex?: number;
 }
 
 export interface SelectTokenModalProps extends BaseModalProps {}

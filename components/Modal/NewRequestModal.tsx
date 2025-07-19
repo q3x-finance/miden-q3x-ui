@@ -26,7 +26,7 @@ export function NewRequestModal({ isOpen, onClose }: ModalProp<SelectTokenModalP
   if (!isOpen) return null;
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title="Create New Request" icon="/modal/coin-icon.gif" zIndex={20}>
+    <BaseModal isOpen={isOpen} onClose={onClose} title="Create New Request" icon="/modal/coin-icon.gif">
       <div className="flex flex-col gap-0">
         <div className="flex flex-col rounded-b-2xl border border-solid bg-[#1E1E1E] border-zinc-800 max-h-[800px] overflow-y-auto w-[500px] p-2">
           {/* Amount */}
