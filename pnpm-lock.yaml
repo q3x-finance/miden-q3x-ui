@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@demox-labs/miden-sdk':
-        specifier: 0.9.2
-        version: 0.9.2(chai@5.2.0)
+        specifier: 0.10.1
+        version: 0.10.1(chai@5.2.0)
       '@demox-labs/miden-wallet-adapter-base':
         specifier: ^0.1.4
         version: 0.1.4
@@ -86,8 +86,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@demox-labs/miden-sdk@0.9.2':
-    resolution: {integrity: sha512-Ct1OvLT5TRMCX6FxnlvbD8FsfRb7YDgGD40aWaZ8te8K3la9YOKIk5KQlszCJDaUJPAYFG6TSLBtGBoGP9vzRA==}
+  '@demox-labs/miden-sdk@0.10.1':
+    resolution: {integrity: sha512-2fdTkifJ1H+HTfc0QKUcSr5bK++jYw4W/m0kWt//DeQoZeg3RORMo8POG2eDMLakxgLDZy7WRYLRScGguTaLAQ==}
 
   '@demox-labs/miden-wallet-adapter-base@0.1.4':
     resolution: {integrity: sha512-FCOmtT63mdCyAzEtPSwNdclaNga7hot2uK125HSh67yme5ck5OB0iWZj7tC3odOFU7+5N9Xzko6vPZqC3GUjUg==}
@@ -1362,7 +1362,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@demox-labs/miden-sdk@0.9.2(chai@5.2.0)':
+  '@demox-labs/miden-sdk@0.10.1(chai@5.2.0)':
     dependencies:
       chai-as-promised: 8.0.1(chai@5.2.0)
       dexie: 4.0.11

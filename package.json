@@ -11,7 +11,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
   },
   "dependencies": {
-    "@demox-labs/miden-sdk": "0.9.2",
+    "@demox-labs/miden-sdk": "0.10.1",
     "@demox-labs/miden-wallet-adapter-base": "^0.1.4",
     "@demox-labs/miden-wallet-adapter-react": "^0.1.0",
     "@demox-labs/miden-wallet-adapter-reactui": "^0.1.3",
